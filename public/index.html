@@ -11,16 +11,19 @@
             <p>Welcome to <strong>CrypTrader</strong>, a student project where you can securely login and trade!</p>
 
             <h3>Login</h3>
+
+            <form action="/login" method="post">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username">
+            <input type="text" id="username" name="username" required>
             <br>
 
             <label for="password"> Password:</label>
-            <input type="password" id="password" name="password"><br>
+            <input type="password" id="password" name="password" required><br>
             <br>
             <button type="submit">Login</button>
+            </form>
 
-            <h5>New to CrypTrader? <a href="sign%20up.html"><em>Create an Account Here!</em></a> </h5>
+            <h5>New to CrypTrader? <a href="sign-up.html"><em>Create an Account Here!</em></a> </h5>
         </div>
 
     </body>
