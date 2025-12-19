@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style-sheet.css">
+    <meta charset="UTF-8">
+    <title>CrypTrader | Dashboard</title>
+</head>
+<body>
+<header>
+    <h1 class="title">CrypTrader Dashboard</h1>
+</header>
+
+<div class="dashboard-container">
+<section id="place-order-section">
+    <h2>Place Order</h2>
+    <form method="post" action="/orders/place">
+        <label>Product:
+            <input name="product" type="text" required>
+        </label>
+        <br>
+        <label>Side:
+            <select name="side">
+                <option value="BUY">Buy</option>
+                <option value="SELL">Sell</option>
+            </select>
+        </label>
+        <br>
+        <label>Price:
+            <input name="price" type="number" step="0.01" required>
+        </label>
+        <br>
+        <label>Quantity:
+            <input name="quantity" type="number" required>
+        </label>
+        <br>
+        <button type="submit">Submit Order</button>
+    </form>
+</section>
+
+<section id="current-market">
+    <h2 style="text-align: center;">Current Market</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Best Bid Quantity</th>
+                <th>Best Bid Price</th>
+                <th>Best Ask Quantity</th>
+                <th>Best Ask Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <! JS will inject rows here>
+        </tbody>
+    </table>
+</section>
+</div>
+
+<div class="bottom-left-element">
+    <p>Logged in as: {{username}}</p>
+    <form method="POST" action="/logout">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+</body>
+</html>
