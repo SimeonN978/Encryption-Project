@@ -1,5 +1,6 @@
 package Java.Model.user;
 
+import Java.Model.price.InvalidPriceException;
 import Java.Model.tradable.TradableDTO;
 
 import java.util.TreeMap;
@@ -22,7 +23,7 @@ public class UserManager {
         return instance;
     }
 
-    public void init(String[] userIn) throws InvalidUserException{
+    public void init(String[] userIn) throws InvalidUserException, InvalidPriceException {
         managerMap.clear();
         if(userIn == null){
             throw new InvalidUserException("Null User array");

@@ -3,6 +3,9 @@ package Java.Model.user;
 
 import Java.Model.currentMarket.CurrentMarketObserver;
 import Java.Model.currentMarket.CurrentMarketSide;
+import Java.Model.price.InvalidPriceException;
+import Java.Model.price.Price;
+import Java.Model.price.PriceFactory;
 import Java.Model.tradable.TradableDTO;
 
 import java.util.HashMap;
@@ -13,11 +16,19 @@ public class User implements CurrentMarketObserver {
     private HashMap<String, CurrentMarketSide[]> currentMarkets = new HashMap<>();
     private String userId;
 
+    private Wallet money;
 
-    public User(String userId) throws InvalidUserException {
+
+    public User(String userId) throws InvalidUserException, InvalidPriceException {
 
         setUser(userId);
+        setWallet(PriceFactory.makePrice(0));
     }
+
+    private void setWallet(Price p) throws InvalidPriceException{
+        money = new Wallet(PriceFactory.makePrice(0));
+    }
+
 
     private void setUser(String user) throws InvalidUserException {
         if( user == null || user.trim().isEmpty()){
@@ -37,6 +48,13 @@ public class User implements CurrentMarketObserver {
 
 
     }
+
+    public Wallet getWallet(){
+        return money;
+    }
+
+
+
 
     public String getUserId(){
         return userId;
@@ -68,6 +86,8 @@ public class User implements CurrentMarketObserver {
         }
         return sb.toString();
     }
+
+
 
     @Override
     public String toString() {

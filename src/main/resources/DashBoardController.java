@@ -15,7 +15,7 @@ public class DashBoardController {
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
-        before("/dashboard", this::authenticateDashboardAccess);
+        before("/dashboard", AuthenticationController::authenticateDashboardAccess);
         get("/dashboard", this::handleDashboard);
 
         post("/logout", this::handleLogout);
@@ -24,6 +24,10 @@ public class DashBoardController {
 
     private Object handleNewOrder(Request request, Response response) {
         //TODO
+        // fetch all of the parameters for an order.
+        // check if the value of the order exeeds the value of the User's wallet.
+        //if not, then you can place it. Maybe done like this( ProductManager.getInstance.addTradable())
+
         return null;
     }
 
@@ -42,25 +46,7 @@ public class DashBoardController {
         return null;
     }
 
-    // make sure user is logged in before they can access the dashboard
-    private void authenticateDashboardAccess(Request request, Response response) {
-        boolean authenticated = false;
-        String username = request.session().attribute("username"); // does the client have an active session with a username
 
-        // Check if the session has a valid username associated with it
-        if(username != null || request.session(false) == null){
-            authenticated = true;
-        }
-
-        // Invalid session --> do not let user access the dashboard
-        // redirect them to default page
-        if(!authenticated){
-            // If not logged in, redirect to login page
-            response.redirect("/login");
-            // Halt request to prevent access to dashboard
-            halt();
-        }
-    }
 
     private Object handleDashboard(Request request, Response response) {
         //Only return if the username and session are valid
