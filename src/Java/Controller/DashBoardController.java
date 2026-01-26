@@ -8,9 +8,12 @@ import spark.Session;
 import static spark.Spark.*;
 
 public class DashBoardController {
+    private final AuthenticationService authenticationService;
 
     //Constructor
-    public DashBoardController() {}
+    public DashBoardController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     //Define User Dashboard routes
     public void register() {

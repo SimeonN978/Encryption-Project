@@ -11,23 +11,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AccountStore {
-    private static AccountStore instance;
-    private static Map<String, String> accounts;
+    private final Map<String, String> accounts = new ConcurrentHashMap<>();
 
     private final String FILENAME = "accounts.json";
+    //private final String filePath;
 
-    private AccountStore() {
-        accounts = new ConcurrentHashMap<>();
-        load();
-    }
-
-    // Singleton (accountStore)
-    public static AccountStore getInstance() {
-        if(instance == null){
-            instance = new AccountStore();
-        }
-
-        return instance;
+    public AccountStore() {
+        load(); // fill accounts map from JSON if it exists
     }
 
     // Public methods >>>

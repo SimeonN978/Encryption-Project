@@ -7,22 +7,26 @@ import spark.Response;
 import static spark.Spark.halt;
 
 public class AuthenticationService {
-    private static final AccountStore accountStore = AccountStore.getInstance();
+    private final AccountStore accountStore;
 
-    public static boolean authenticateLogin(String username, String password){
-        if(!accountStore.exists(username)){
+    public AuthenticationService(AccountStore accountStore){
+        this.accountStore = accountStore;
+    }
+
+    public boolean authenticateLogin(String username, String password){
+        if(!this.accountStore.exists(username)){
             return false; // User does not exist
         }
 
         return EncryptionService.verifyPassword(password, accountStore.getPasswordHash(username));
     }
 
-    public static String validateSignUp(String username, String password){
+    public String validateSignUp(String username, String password){
         if(username == null || password == null){
             return "Username and password required";
         }
 
-        if(AuthenticationService.invalidUserName(username)){
+        if(invalidUserName(username)){
             return "Username already exists";
         }
 
@@ -34,7 +38,7 @@ public class AuthenticationService {
         return "Success";
     }
 
-    private static boolean invalidUserName(String username){
+    private boolean invalidUserName(String username){
         return accountStore.exists(username);
     }
 
