@@ -73,7 +73,25 @@ public class AuthenticationController {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
-        String signUpResult = authenticationService.validateSignUp(username, password);
+        String signUpResult = authenticationService.validateSignUp(username, password); // Calls the password checkers.
+
+        if(signUpResult.equals("Username and password required")){
+            response.redirect("/signup?error=Username and password required");
+            return null;
+        }
+
+        if(signUpResult.equals("Username already exists")){
+            response.redirect("/signup?error=Invalid Username, User already exists.");
+            return null;
+        }
+
+
+        if (signUpResult.equals("Password Does not meet requirements")) {
+            response.redirect("/signup?error=Password needs either one uppercase, one lowercase, or one unique character.");
+            return null;
+
+        }
+
         if(!signUpResult.equals("Success")){
             response.status(400);
             return signUpResult;
