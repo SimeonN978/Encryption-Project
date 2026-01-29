@@ -17,7 +17,7 @@ public class User implements CurrentMarketObserver {
     private String userId;
 
     private Wallet money;
-    private Price accountTotal;
+
 
 
     public User(String userId) throws InvalidUserException, InvalidPriceException {
