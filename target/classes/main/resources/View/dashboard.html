@@ -10,6 +10,17 @@
     <h1 class="title">CrypTrader Dashboard</h1>
 </header>
 
+    <div class="wallet-container">
+        <section id="account-balance">
+            <h4>Account Balance</h4>
+            <h1>$0.00</h1>
+        </section>
+        <section id="wallet-buttons">
+            <button onclick="displayDepositWidget()">Deposit</button>
+            <button onclick="displayWithdrawWidget()">Withdraw</button>
+        </section>
+    </div>
+
 <div class="dashboard-container">
 <section id="place-order-section">
     <h2>Place Order</h2>
@@ -39,6 +50,7 @@
 
 <section id="current-market">
     <h2 style="text-align: center;">Current Market</h2>
+
     <table>
         <thead>
             <tr>
@@ -53,11 +65,12 @@
             <! JS will inject rows here>
         </tbody>
     </table>
+
 </section>
 </div>
 
 <div class="bottom-left-element">
-    <p>Logged in as: {{username}}</p>
+    <p id="name-display"></p>
     <form method="POST" action="/logout">
         <button type="submit">Logout</button>
     </form>

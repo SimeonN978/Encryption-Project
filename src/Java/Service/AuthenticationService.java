@@ -7,24 +7,26 @@ import spark.Response;
 import static spark.Spark.halt;
 
 public class AuthenticationService {
-    private static final AccountStore accountStore = AccountStore.getInstance();
+    private final AccountStore accountStore;
 
-    public static boolean authenticateLogin(String username, String password){
-        if(!accountStore.exists(username)){
+    public AuthenticationService(AccountStore accountStore){
+        this.accountStore = accountStore;
+    }
+
+    public boolean authenticateLogin(String username, String password){
+        if(!this.accountStore.exists(username)){
             return false; // User does not exist
         }
 
         return EncryptionService.verifyPassword(password, accountStore.getPasswordHash(username));
     }
 
-
-    //Check if a password meets valid requirements and if the user already exists.
-    public static String validateSignUp(String username, String password){
+    public String validateSignUp(String username, String password){
         if(username == null || password == null){
             return "Username and password required";
         }
 
-        if(AuthenticationService.invalidUserName(username)){
+        if(invalidUserName(username)){
             return "Username already exists";
         }
         if(!requireValidPassword(password)){
@@ -37,26 +39,6 @@ public class AuthenticationService {
         String hashedPWD = EncryptionService.hashPassword(password);
         accountStore.add(username, hashedPWD);
         return "Success";
-    }
-
-    // make sure user is logged in before they can access the dashboard
-    public static void authenticateDashboardAccess(Request request, Response response) {
-        boolean authenticated = false;
-        String username = request.session().attribute("username"); // does the client have an active session with a username
-
-        // Check if the session has a valid username associated with it
-        if(username != null || request.session(false) == null){
-            authenticated = true;
-        }
-
-        // Invalid session --> do not let user access the dashboard
-        // redirect them to default page
-        if(!authenticated){
-            // If not logged in, redirect to login page
-            response.redirect("/login");
-            // Halt request to prevent access to dashboard
-            halt();
-        }
     }
 
     //Make sure UserNames are not too long. Save memory allocation space.
@@ -73,7 +55,7 @@ public class AuthenticationService {
         }
         return checkChar(password);
     }
-// Password must have unique characters to be stronger
+    // Password must have unique characters to be stronger
     private static boolean checkChar(String password){
         int upper =0;
         int lower =0;
@@ -97,9 +79,27 @@ public class AuthenticationService {
     }
 
 
-    private static boolean invalidUserName(String username){
+    private boolean invalidUserName(String username){
         return accountStore.exists(username) && checkValidUser(username);
     }
 
+    // make sure user is logged in before they can access the dashboard
+    public static void authenticateDashboardAccess(Request request, Response response) {
+        boolean authenticated = false;
+        String username = request.session().attribute("username"); // does the client have an active session with a username
 
+        // Check if the session has a valid username associated with it
+        if(username != null || request.session(false) == null){
+            authenticated = true;
+        }
+
+        // Invalid session --> do not let user access the dashboard
+        // redirect them to default page
+        if(!authenticated){
+            // If not logged in, redirect to login page
+            response.redirect("/login");
+            // Halt request to prevent access to dashboard
+            halt();
+        }
+    }
 }

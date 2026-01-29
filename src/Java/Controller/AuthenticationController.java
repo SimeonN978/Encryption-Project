@@ -10,9 +10,14 @@ import spark.Session;
 import static spark.Spark.*;
 
 public class AuthenticationController {
+    private final AuthenticationService authenticationService;
+    private final RateLimiter rateLimiter;
 
     //Constructor
-    public AuthenticationController() {}
+    public AuthenticationController(AuthenticationService authenticationService, RateLimiter rateLimiter) {
+        this.authenticationService = authenticationService;
+        this.rateLimiter = rateLimiter;
+    }
 
     // Define User Authentication routes
     public void register() {
@@ -22,27 +27,41 @@ public class AuthenticationController {
         get("/login", this::showLoginPage);
 
         //Handle Authentication
+        before("/login", this::beforeLogin);
         post("/signup", this::handleSignUp);
         post("/login", this::handleLogin);
     }
 
+    private void beforeLogin(Request request, Response response) {
+        if(!"POST".equalsIgnoreCase(request.requestMethod())){
+            return; // before() is a post AND get
+        }
 
+        String ip = request.ip();
+        String username = request.queryParams("username");
+        String key = (username == null) ? ip : ip + ":" + username;
 
-
+        //Is the request not allowed via rateLimiter
+        if(!rateLimiter.allowRequest(key)){
+            response.redirect("/login?error=throttled");
+            halt(429, "");
+        }
+    }
 
     private Object handleLogin(Request request, Response response) {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
-        boolean valid = AuthenticationService.authenticateLogin(username, password);
+        boolean valid = authenticationService.authenticateLogin(username, password);
 
         //Is username and password valid
         if(!valid){
-            response.status(401);
-            return "Invalid username or password";
+            response.redirect("/login?error=invalid");
+            halt(401, "");
         }
 
         // Valid login at this point
+        rateLimiter.onSuccessfulLogin(username);
         Session session = request.session(true); // Make a new session for the user
         session.attribute("username", username);  // set session attribute
 
@@ -54,7 +73,7 @@ public class AuthenticationController {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
-        String signUpResult = AuthenticationService.validateSignUp(username, password);
+        String signUpResult = authenticationService.validateSignUp(username, password);
         if(!signUpResult.equals("Success")){
             response.status(400);
             return signUpResult;
@@ -67,8 +86,6 @@ public class AuthenticationController {
         response.redirect("/dashboard");
         return null;
     }
-
-
 
     //Show page helpers for lambda funcs
     private Object showLoginPage(Request request, Response response) {
