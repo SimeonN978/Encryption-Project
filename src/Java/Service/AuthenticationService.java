@@ -30,7 +30,7 @@ public class AuthenticationService {
             return "Username already exists";
         }
         if(!requireValidPassword(password)){
-            return "Password Does not meet requirments";
+            return "Password Does not meet requirements";
         }
 
         // Valid Sign up at this point

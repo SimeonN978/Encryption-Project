@@ -23,7 +23,26 @@
         <button type="submit">Sign Up</button>
     </form>
 
+
+    <p id="signup-error" style="color:#c00; font-weight:600; display:none;"></p>
+
     <h5>Already Have an Account? <a href="login.html"><em>Login Here!</em></a> </h5>
 </div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+
+    if(error){
+        const el = document.getElementById('signup-error');
+        const messages = {
+            invalidUser: "Username already exists or is too long",
+            missingInput: "Username or Password required",
+            invalidRequirements: "Password must be at least 8 characters and contain one lowercase, one uppercase, and one unique character"
+        };
+        el.textContent = messages[error] || "Signup failed. Please try again.";
+        el.style.display = 'block';
+    }
+</script>
 </body>
 </html>

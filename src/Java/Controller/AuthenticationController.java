@@ -74,28 +74,33 @@ public class AuthenticationController {
         String password = request.queryParams("password");
 
         String signUpResult = authenticationService.validateSignUp(username, password); // Calls the password checkers.
-
+        //If signup requirements are not valid, redirect to a signup error page.
         if(signUpResult.equals("Username and password required")){
-            response.redirect("/signup?error=Username and password required");
+
+            response.redirect("/signup?error=missingInput");
+            response.status(401);
             return null;
         }
 
         if(signUpResult.equals("Username already exists")){
-            response.redirect("/signup?error=Invalid Username, User already exists.");
+            response.redirect("/signup?error=invalidUser");
+            response.status(401);
             return null;
         }
 
 
         if (signUpResult.equals("Password Does not meet requirements")) {
-            response.redirect("/signup?error=Password needs either one uppercase, one lowercase, or one unique character.");
+            response.redirect("/signup?error=invalidRequirements");
+            response.status(401);
             return null;
 
         }
 
-        if(!signUpResult.equals("Success")){
-            response.status(400);
-            return signUpResult;
-        }
+        //edge cases that we do not catch.
+//        if(!signUpResult.equals("Success")){
+//            response.status(400);
+//            return signUpResult;
+//        }
 
         // Valid sign up at this point
         Session session = request.session(true); //Create new session for user
