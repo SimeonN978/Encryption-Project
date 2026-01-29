@@ -1,5 +1,6 @@
 package Java.Controller;
 
+import Java.Service.AuthenticationService;
 import spark.Request;
 import spark.Response;
 import spark.Session;
@@ -15,7 +16,7 @@ public class DashBoardController {
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
-        before("/dashboard", AuthenticationController::authenticateDashboardAccess);
+        before("/dashboard", AuthenticationService::authenticateDashboardAccess);
         get("/dashboard", this::handleDashboard);
 
         post("/logout", this::handleLogout);

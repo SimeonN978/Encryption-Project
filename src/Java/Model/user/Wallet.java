@@ -4,6 +4,8 @@ import Java.Model.price.InvalidPriceException;
 import Java.Model.price.Price;
 import Java.Model.price.PriceFactory;
 
+
+//Wallet class that represents value of money held in an account. Separate from user to maintain single responsibility.
  public class Wallet {
 
 
