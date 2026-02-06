@@ -1,5 +1,8 @@
 package Java.Controller;
 
+import Java.Model.price.InvalidPriceException;
+import Java.Model.user.InvalidUserException;
+import Java.Model.user.UserManager;
 import Java.Service.AuthenticationService;
 
 import spark.Request;
@@ -69,7 +72,7 @@ public class AuthenticationController {
         return null;
     }
 
-    private Object handleSignUp(Request request, Response response) {
+    private Object handleSignUp(Request request, Response response) throws InvalidPriceException, InvalidUserException {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
@@ -105,6 +108,10 @@ public class AuthenticationController {
         // Valid sign up at this point
         Session session = request.session(true); //Create new session for user
         session.attribute("username", username);  //Set session username
+
+
+        //Add User to the UserManager when there is a successful signup
+        UserManager.getInstance().addUser(username);
 
         response.redirect("/dashboard");
         return null;

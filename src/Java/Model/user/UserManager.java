@@ -22,24 +22,24 @@ public class UserManager {
         }
         return instance;
     }
-
-    public void init(String[] userIn) throws InvalidUserException, InvalidPriceException {
-        managerMap.clear();
-        if(userIn == null){
-            throw new InvalidUserException("Null User array");
-        }
-        for(String u : userIn){
-            if(u == null){
-                throw new InvalidUserException("Invalid User");
-            }
-            if(u.trim().isEmpty()){
-                continue;
-            }
-            if(!managerMap.containsKey(u)){
-                managerMap.put(u, new User(u));
-            }
-        }
-    }
+//TEST CODE FROM THE PROJECT
+//    public void init(String[] userIn) throws InvalidUserException, InvalidPriceException {
+//        managerMap.clear();
+//        if(userIn == null){
+//            throw new InvalidUserException("Null User array");
+//        }
+//        for(String u : userIn){
+//            if(u == null){
+//                throw new InvalidUserException("Invalid User");
+//            }
+//            if(u.trim().isEmpty()){
+//                continue;
+//            }
+//            if(!managerMap.containsKey(u)){
+//                managerMap.put(u, new User(u));
+//            }
+//        }
+//    }
 
     public void updateTradable(String userId, TradableDTO o) throws InvalidUserException{
         if(userId == null || o == null || !managerMap.containsKey(userId)){
@@ -57,6 +57,14 @@ public class UserManager {
         }
         return managerMap.get(userId);
     }
+
+    public void addUser(String userId) throws InvalidUserException, InvalidPriceException {
+        if(userId == null){
+            throw new InvalidUserException("User Id is null");
+        }
+        managerMap.put(userId, new User(userId));
+    }
+
 
     @Override
     public String toString(){

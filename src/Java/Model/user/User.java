@@ -35,16 +35,15 @@ public class User implements CurrentMarketObserver {
         if( user == null || user.trim().isEmpty()){
             throw new InvalidUserException("Can not accept null input or zero input");
         }
-        if(user.length() != 3){
-            throw new InvalidUserException("Length of User is not equal to three " + user);
-        }
         user = user.trim();
-        for (char c : user.toCharArray()){
-            if(!Character.isLetter(c)){
-                throw new InvalidUserException("User can only be letters ");
-            }
-        }
-        user = user.toUpperCase();
+//        for (char c : user.toCharArray()){
+//            if(!Character.isLetter(c)){
+//                throw new InvalidUserException("User can only be letters ");
+//            }
+//        }
+
+        //Potentially not needed:
+        //user = user.toUpperCase();
         this.userId = user;
 
 
