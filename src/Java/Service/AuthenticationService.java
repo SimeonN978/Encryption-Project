@@ -60,6 +60,7 @@ public class AuthenticationService {
         int upper =0;
         int lower =0;
         int unique =0;
+        int nums =0;
         for (char c : password.toCharArray()){
             if(Character.isUpperCase(c) && Character.isLetter(c)){
                 upper++;
@@ -67,11 +68,14 @@ public class AuthenticationService {
             else if (Character.isLowerCase(c) && Character.isLetter(c)){
                 lower++;
             }
-            else if (!Character.isLetter(c)){
+            else if (!Character.isLetter(c) && Character.isDigit(c)){
+                nums++;
+            }
+            else if (!Character.isLetter(c) && !Character.isDigit(c) ){
                 unique++;
             }
         }
-        if(upper == 0 || lower==0 || unique ==0){
+        if(upper == 0 || lower==0 || unique ==0 || nums ==0){
             return false;
         }
         return true;
