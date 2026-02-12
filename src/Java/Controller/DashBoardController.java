@@ -1,10 +1,17 @@
 package Java.Controller;
 
+import Java.Model.user.InvalidUserException;
+import Java.Model.user.User;
+import Java.Model.user.UserManager;
 import Java.Service.AuthenticationService;
 import spark.Request;
 import spark.Response;
 import spark.Session;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.*;
 import static spark.Spark.*;
 
 public class DashBoardController {
@@ -41,7 +48,7 @@ public class DashBoardController {
     private Object handleLogout(Request request, Response response) {
         Session session = request.session(false);
 
-        if(session != null){
+        if (session != null) {
             session.removeAttribute("user");
             session.invalidate();
         }
@@ -51,10 +58,28 @@ public class DashBoardController {
     }
 
 
+    private Object handleDashboard(Request request, Response response) throws InvalidUserException {
 
-    private Object handleDashboard(Request request, Response response) {
-        //Only return if the username and session are valid
-        response.type("text/html");
-        return HTMLRenderer.render("/View/dashboard.html");
+
+        AuthenticationService.authenticateDashboardAccess(request, response);
+
+        String username = request.session().attribute("username");
+        User user = UserManager.getInstance().getUser(username);
+
+        // Pass data to HTML template engine // Renderer
+        Map<String, Object> model = new HashMap<>();
+        model.put("username", username);
+        model.put("wallet", user.getWalletBalance());  // Assuming Wallet has getBalance()
+        model.put("portfolio", user.getUserMap());
+        model.put("watchlist", user.getCurrentMarkets()); // Or whatever other info you want
+
+        return HTMLRenderer.render("/View/dashboard.html", model);
     }
+
+
+//        OLD handle Dashboard Code:
+//        //Only return if the username and session are valid
+//        response.type("text/html");
+//        return HTMLRenderer.render("/View/dashboard.html");
+//   }
 }

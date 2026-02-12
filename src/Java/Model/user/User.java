@@ -16,18 +16,19 @@ public class User implements CurrentMarketObserver {
     private HashMap<String, CurrentMarketSide[]> currentMarkets = new HashMap<>();
     private String userId;
 
-    private Wallet money;
+    private Wallet wallet;
 
 
-
+    //Create user
     public User(String userId) throws InvalidUserException, InvalidPriceException {
 
         setUser(userId);
-        setWallet(PriceFactory.makePrice(0));
+        setWallet(0);
     }
 
-    private void setWallet(Price p) throws InvalidPriceException{
-        money = new Wallet(PriceFactory.makePrice(0));
+    //Set Wallet value
+    private void setWallet(int p) throws InvalidPriceException{
+        wallet = new Wallet(PriceFactory.makePrice(p));
     }
 
 
@@ -49,15 +50,31 @@ public class User implements CurrentMarketObserver {
 
     }
 
-    public Wallet getWallet(){
-        return money;
+
+    //wallet functions
+    public void addToWallet(int amount) throws InvalidPriceException {
+        wallet.addMoney(amount);
     }
 
+    public void subtractFromWallet(int amount) throws InvalidPriceException {
+        wallet.subtractMoney(amount);
+    }
 
-
+    public Price getWalletBalance() {
+        return wallet.getWalletValue();
+    }
 
     public String getUserId(){
+
         return userId;
+    }
+
+    public HashMap<String, TradableDTO> getUserMap() {
+        return new HashMap<>(userMap); // Returns a copy
+    }
+
+    public HashMap<String, CurrentMarketSide[]> getCurrentMarkets() {
+        return new HashMap<>(currentMarkets); // Returns a copy
     }
 
 
@@ -71,6 +88,9 @@ public class User implements CurrentMarketObserver {
         userMap.put(o.tradableId(),o);
     }
 
+
+
+
     public void updateCurrentMarket(String symbol, CurrentMarketSide buySide, CurrentMarketSide sellSide){
         CurrentMarketSide[] marketArray = new CurrentMarketSide[2];
         marketArray[0] = buySide;
@@ -78,7 +98,10 @@ public class User implements CurrentMarketObserver {
         currentMarkets.put(symbol,marketArray);
     }
 
-    public String getCurrentMarkets(){
+
+
+
+    public String getCurrentMarketsString(){
         StringBuilder sb = new StringBuilder();
         for(String s : currentMarkets.keySet()){
             sb.append(s).append("   ").append(currentMarkets.get(s)[0]).append(" - ").append(currentMarkets.get(s)[1]);
