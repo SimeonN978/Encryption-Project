@@ -30,6 +30,8 @@ public class Main {
 
         DashBoardController dashRoutes = new DashBoardController(authenticationService);
         dashRoutes.register();
+
+        //If there is an error, print the stack trace
         exception(Exception.class, (e, req, res) -> {
             e.printStackTrace();
         });

@@ -7,13 +7,13 @@
 </head>
 <body>
 <header>
-    <h1 class="title">CrypTrader Dashboard</h1>
+    <h1 class="title">Welcome {{username}} to CrypTrader Dashboard</h1>
 </header>
 
     <div class="wallet-container">
         <section id="account-balance">
             <h4>Account Balance</h4>
-            <h1>$0.00</h1>
+            <h1>{{wallet}}</h1>
         </section>
         <section id="wallet-buttons">
             <button onclick="displayDepositWidget()">Deposit</button>
