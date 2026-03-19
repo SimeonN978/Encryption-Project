@@ -1,8 +1,8 @@
-package Java.Service;
+package Service;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class EncryptionService {
+public class HashService {
     public static String hashPassword(String plainTextPWD){
         return BCrypt.hashpw(plainTextPWD, BCrypt.gensalt());
     }

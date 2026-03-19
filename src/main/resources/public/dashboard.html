@@ -10,7 +10,7 @@
     <h1 class="title">Welcome {{username}} to CrypTrader Dashboard</h1>
 </header>
 
-    <div class="wallet-container">
+<div class="wallet-container section-card">
         <section id="account-balance">
             <h4>Account Balance</h4>
             <h1>{{wallet}}</h1>
@@ -22,7 +22,6 @@
     </div>
 
 <div class="dashboard-container">
-<section id="place-order-section">
     <h2>Place Order</h2>
     <form method="post" action="/orders/place">
         <label>Product:
@@ -46,9 +45,9 @@
         <br>
         <button type="submit">Submit Order</button>
     </form>
-</section>
+</div>
 
-<section id="current-market">
+    <div id="current-market" class="section-card">
     <h2 style="text-align: center;">Current Market</h2>
 
     <table>
@@ -65,9 +64,7 @@
             <! JS will inject rows here>
         </tbody>
     </table>
-
-</section>
-</div>
+    </div>
 
 <div class="bottom-left-element">
     <p id="name-display"></p>
