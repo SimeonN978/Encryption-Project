@@ -10,11 +10,12 @@
 <div style="text-align: center;">
     <h1 class="title">CrypTrader</h1>
     <p>Welcome to <strong>CrypTrader</strong>, a student project where you can securely login and trade!</p>
+    <br>
 
     <h3>Login</h3>
 
-    <div>
-    <form action="/login" method="post">
+    <div class="section-card">
+    <form id="loginForm" action="/login" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -24,25 +25,44 @@
         <br>
         <button type="submit">Login</button>
     </form>
-        <p id="login-error" style="color:#c00; font-weight:600; display:none;"></p>
+        <p id="statusMessage" style="color:#c00; font-weight:600; display:none;"></p>
     </div>
 
     <h5>New to CrypTrader? <a href="sign-up.html"><em>Create an Account Here!</em></a> </h5>
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const error = params.get('error');
+    // 1. Get the form element
+    const loginForm = document.getElementById('loginForm');
 
-    if(error){
-        const el = document.getElementById('login-error');
-        const messages = {
-            invalid: "Incorrect username or password",
-            throttled: "Too many login attempts. Please try again later."
-        };
-        el.textContent = messages[error] || "Login failed. Please try again.";
-        el.style.display = 'block';
-    }
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Stop the page from refreshing
+
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                // 2. Use the form we just defined
+                body: new URLSearchParams(new FormData(loginForm))
+            });
+
+            const resultText = await response.text();
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (response.status === 200) {
+                window.location.href = "/dashboard.html";
+            } else if (response.status === 429) {
+                // 3. Update text AND make the div visible
+                statusMessage.textContent = resultText;
+                statusMessage.style.display = 'block';
+            } else {
+                // 3. Update text AND make the div visible
+                statusMessage.textContent = resultText;
+                statusMessage.style.display = 'block';
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+        }
+    });
 </script>
 </body>
 </html>
