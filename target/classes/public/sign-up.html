@@ -5,17 +5,22 @@
     <meta charset="UTF-8">
     <title>CrypTrader | Sign Up</title>
 </head>
-
 <body>
+
 <div style="text-align: center;">
     <h1 class="title">CrypTrader</h1>
     <p>Welcome to <strong>CrypTrader</strong>, a student project where you can securely login and trade!</p>
+    <br>
 
     <h3>Sign Up</h3>
     <div class="section-card">
-    <form action="/signup" method="post">
+    <form id="signupForm" action="/signup" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
+        <br>
+
+        <label for="email">email:</label>
+        <input type="email" id="email" name="email" required>
         <br>
 
         <label for="password"> Password:</label>
@@ -23,28 +28,40 @@
         <br>
         <button type="submit">Sign Up</button>
     </form>
+        <p id="statusMessage" style="color:#c00; font-weight:600; display:none;"></p>
     </div>
-
-
-    <p id="signup-error" style="color:#c00; font-weight:600; display:none;"></p>
 
     <h5>Already Have an Account? <a href="login.html"><em>Login Here!</em></a> </h5>
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const error = params.get('error');
+    // 1. Get the form element
+    const signupForm = document.getElementById('signupForm');
 
-    if(error){
-        const el = document.getElementById('signup-error');
-        const messages = {
-            invalidUser: "Username already exists or is too long",
-            missingInput: "Username or Password required",
-            invalidRequirements: "Password must be at least 8 characters and contain one lowercase, one uppercase, and one unique character"
-        };
-        el.textContent = messages[error] || "Signup failed. Please try again.";
-        el.style.display = 'block';
-    }
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Stop the page from refreshing
+
+        try {
+            const response = await fetch('/signup', {
+                method: 'POST',
+                // 2. Use the form we just defined
+                body: new URLSearchParams(new FormData(signupForm))
+            });
+
+            const resultText = await response.text();
+            const statusMessage = document.getElementById('statusMessage');
+
+            if (response.status === 200) {
+                window.location.href = "/login.html";
+            } else {
+                // 3. Update text AND make the div visible
+                statusMessage.textContent = resultText;
+                statusMessage.style.display = 'block';
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+        }
+    });
 </script>
 </body>
 </html>
