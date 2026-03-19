@@ -11,6 +11,7 @@ import spark.Response;
 
 import spark.Session;
 
+import static Controller.HTMLRenderer.render;
 import static spark.Spark.*;
 
 public class AuthenticationController {
@@ -29,6 +30,7 @@ public class AuthenticationController {
     public void register() {
         //Show pages to user
         get("/", this::showIndexPage);
+        get("/index", this::showIndexPage);
         get("/signup", this::showSignUpPage);
         get("/login", this::showLoginPage);
 
@@ -53,7 +55,7 @@ public class AuthenticationController {
         }
     }
 
-    private Object handleLogin(Request request, Response response) {
+    private Object handleLogin(Request request, Response response) throws InvalidPriceException, InvalidUserException {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
@@ -68,11 +70,18 @@ public class AuthenticationController {
         // Valid login at this point
         rateLimiter.onSuccessfulLogin(username);
 
+        // Ensure the logged-in user exists in UserManager
+        try {
+            UserManager.getInstance().getUser(username);
+        } catch (InvalidUserException e) {
+            UserManager.getInstance().addUser(username);
+        }
+
         Session session = request.session(true); // Make a new session for the user
         session.attribute("username", username);  // set session attribute
 
-        response.status(200);
-        return "Success";
+        response.redirect("/dashboard");
+        return null;
     }
 
     private Object handleSignUp(Request request, Response response) throws InvalidPriceException, InvalidUserException {
@@ -97,17 +106,20 @@ public class AuthenticationController {
 
     //Show page helpers for lambda funcs
     private Object showLoginPage(Request request, Response response) {
-        response.redirect("/login.html");
-        return null;
+        response.status(200);
+        response.type("text/html");
+        return render("/views/login.html");
     }
 
     private Object showSignUpPage(Request request, Response response) {
-        response.redirect("/sign-up.html");
-        return null;
+        response.status(200);
+        response.type("text/html");
+        return render("/views/signup.html");
     }
 
     private Object showIndexPage(Request request, Response response) {
-        response.redirect("/index.html");
-        return null;
+        response.status(200);
+        response.type("text/html");
+        return render("/views/index.html");
     }
 }

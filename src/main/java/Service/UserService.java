@@ -24,13 +24,8 @@ public class UserService {
 
     // make sure user is logged in before they can access the dashboard
     public static void authenticateDashboardAccess(Request request, Response response) {
-        boolean authenticated = false;
         String username = request.session().attribute("username"); // does the client have an active session with a username
-
-        // Check if the session has a valid username associated with it
-        if(username != null && request.session(false) != null){
-            authenticated = true;
-        }
+        boolean authenticated = username != null && request.session(false) != null;
 
         // Invalid session --> do not let user access the dashboard
         // redirect them to default page

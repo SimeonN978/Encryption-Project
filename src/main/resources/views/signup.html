@@ -3,57 +3,56 @@
 <head>
     <link rel="stylesheet" href="/style-sheet.css">
     <meta charset="UTF-8">
-    <title>CrypTrader | Login</title>
+    <title>CrypTrader | Sign Up</title>
 </head>
-
 <body>
+
 <div style="text-align: center;">
     <h1 class="title">CrypTrader</h1>
     <p>Welcome to <strong>CrypTrader</strong>, a student project where you can securely login and trade!</p>
     <br>
 
-    <h3>Login</h3>
-
+    <h3>Sign Up</h3>
     <div class="section-card">
-    <form id="loginForm" action="/login" method="post">
+    <form id="signupForm" action="/signup" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
+        <br>
+
+        <label for="email">email:</label>
+        <input type="email" id="email" name="email" required>
         <br>
 
         <label for="password"> Password:</label>
         <input type="password" id="password" name="password" required><br>
         <br>
-        <button type="submit">Login</button>
+        <button type="submit">Sign Up</button>
     </form>
         <p id="statusMessage" style="color:#c00; font-weight:600; display:none;"></p>
     </div>
 
-    <h5>New to CrypTrader? <a href="sign-up.html"><em>Create an Account Here!</em></a> </h5>
+    <h5>Already Have an Account? <a href="/login"><em>Login Here!</em></a> </h5>
 </div>
 
 <script>
     // 1. Get the form element
-    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
 
-    loginForm.addEventListener('submit', async (e) => {
+    signupForm.addEventListener('submit', async (e) => {
         e.preventDefault(); // Stop the page from refreshing
 
         try {
-            const response = await fetch('/login', {
+            const response = await fetch('/signup', {
                 method: 'POST',
                 // 2. Use the form we just defined
-                body: new URLSearchParams(new FormData(loginForm))
+                body: new URLSearchParams(new FormData(signupForm))
             });
 
             const resultText = await response.text();
             const statusMessage = document.getElementById('statusMessage');
 
             if (response.status === 200) {
-                window.location.href = "/dashboard.html";
-            } else if (response.status === 429) {
-                // 3. Update text AND make the div visible
-                statusMessage.textContent = resultText;
-                statusMessage.style.display = 'block';
+                window.location.href = "/login";
             } else {
                 // 3. Update text AND make the div visible
                 statusMessage.textContent = resultText;

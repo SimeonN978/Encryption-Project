@@ -28,7 +28,7 @@
         <p id="statusMessage" style="color:#c00; font-weight:600; display:none;"></p>
     </div>
 
-    <h5>New to CrypTrader? <a href="sign-up.html"><em>Create an Account Here!</em></a> </h5>
+    <h5>New to CrypTrader? <a href="/signup"><em>Create an Account Here!</em></a> </h5>
 </div>
 
 <script>
@@ -49,7 +49,7 @@
             const statusMessage = document.getElementById('statusMessage');
 
             if (response.status === 200) {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/dashboard";
             } else if (response.status === 429) {
                 // 3. Update text AND make the div visible
                 statusMessage.textContent = resultText;

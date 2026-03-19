@@ -1,11 +1,18 @@
 package Controller;
 
+import Model.price.InvalidPriceException;
 import Model.user.InvalidUserException;
+import Model.user.User;
+import Model.user.UserManager;
 import Service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Session;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static Controller.HTMLRenderer.render;
 import static spark.Spark.*;
 
 public class DashBoardController {
@@ -43,7 +50,7 @@ public class DashBoardController {
         Session session = request.session(false);
 
         if (session != null) {
-            session.removeAttribute("user");
+            session.removeAttribute("username");
             session.invalidate();
         }
 
@@ -52,12 +59,17 @@ public class DashBoardController {
     }
 
 
-    private Object handleDashboard(Request request, Response response) throws InvalidUserException {
+    private Object handleDashboard(Request request, Response response) throws InvalidUserException, InvalidPriceException {
         UserService.authenticateDashboardAccess(request, response);
 
-        /**
         String username = request.session().attribute("username");
-        User user = UserManager.getInstance().getUser(username);
+        User user;
+        try {
+            user = UserManager.getInstance().getUser(username);
+        } catch (InvalidUserException e) {
+            UserManager.getInstance().addUser(username);
+            user = UserManager.getInstance().getUser(username);
+        }
 
         // Pass data to HTML template engine // Renderer
         Map<String, Object> model = new HashMap<>();
@@ -65,10 +77,9 @@ public class DashBoardController {
         model.put("wallet", user.getWalletBalance());  // Assuming Wallet has getBalance()
         model.put("portfolio", user.getUserMap());
         model.put("watchlist", user.getCurrentMarkets()); // Or whatever other info you want
-        **/
 
         response.status(200);
-        response.redirect("/dashboard.html");
-        return null;
+        response.type("text/html");
+        return render("/private/dashboard.html", model);
     }
 }
