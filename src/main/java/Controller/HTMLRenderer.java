@@ -1,4 +1,4 @@
-package Java.Controller;
+package Controller;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
