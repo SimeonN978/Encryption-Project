@@ -1,24 +1,18 @@
-package Java.Controller;
+package Controller;
 
-import Java.Model.user.InvalidUserException;
-import Java.Model.user.User;
-import Java.Model.user.UserManager;
-import Java.Service.AuthenticationService;
+import Model.user.InvalidUserException;
+import Service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Session;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.*;
 import static spark.Spark.*;
 
 public class DashBoardController {
-    private final AuthenticationService authenticationService;
+    private final UserService authenticationService;
 
     //Constructor
-    public DashBoardController(AuthenticationService authenticationService) {
+    public DashBoardController(UserService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
@@ -26,7 +20,7 @@ public class DashBoardController {
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
-        before("/dashboard", AuthenticationService::authenticateDashboardAccess);
+        before("/dashboard", UserService::authenticateDashboardAccess);
         get("/dashboard", this::handleDashboard);
 
         post("/logout", this::handleLogout);
@@ -59,10 +53,9 @@ public class DashBoardController {
 
 
     private Object handleDashboard(Request request, Response response) throws InvalidUserException {
+        UserService.authenticateDashboardAccess(request, response);
 
-
-        AuthenticationService.authenticateDashboardAccess(request, response);
-
+        /**
         String username = request.session().attribute("username");
         User user = UserManager.getInstance().getUser(username);
 
@@ -72,14 +65,10 @@ public class DashBoardController {
         model.put("wallet", user.getWalletBalance());  // Assuming Wallet has getBalance()
         model.put("portfolio", user.getUserMap());
         model.put("watchlist", user.getCurrentMarkets()); // Or whatever other info you want
+        **/
 
-        return HTMLRenderer.render("/View/dashboard.html", model);
+        response.status(200);
+        response.redirect("/dashboard.html");
+        return null;
     }
-
-
-//        OLD handle Dashboard Code:
-//        //Only return if the username and session are valid
-//        response.type("text/html");
-//        return HTMLRenderer.render("/View/dashboard.html");
-//   }
 }
