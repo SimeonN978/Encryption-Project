@@ -1,89 +1,107 @@
-html {
-  background-color: white;
+/* ===== Reset ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-table{
-    border: 1px solid black;
-    font-family: arial;
-    border-collapse: collapse;
-    width: 100%;
+/* ===== Base Layout ===== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f7f8fa;
+    color: #1f2937;
+    padding: 60px 20px;
 }
 
-td,th {
-    border: 1px solid black;
-    text-align: left;
-    padding: 8px;
-
+/* Center content with max width */
+.app-container {
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-tr{
-    background-color: white;
-}
-
-.title {
+/* ===== Page Titles ===== */
+h1 {
     text-align: center;
-    color: blue;
-    border: 5px solid black;
-    border-radius: 250px;
-    background-color: lightblue;
-    width: 250px;
-    margin: auto;
+    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 50px;
+    letter-spacing: -0.5px;
 }
 
-.bottom-left-element {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
+/* ===== Section Cards ===== */
+.section-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 14px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
-.dashboard-container{
-    display:flex;
-    gap: 10px;
-    align-items: start;
+/* Section headers inside cards */
+.section-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
-.wallet-container{
-    background-image: url('/images/wallet_background.jpg');
-    background-size: cover;
+/* ===== Account Balance Card (Still a Card, but Cleaner) ===== */
+.account-balance-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 18px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    text-align: center;
+}
 
-    border: 5px solid black;
-    border-radius: 20px;
+.account-balance-card h2 {
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #6b7280;
+}
 
-    width: 300px;
-    margin: 15px auto auto auto;
+.account-balance-card .balance-amount {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+
+/* ===== Inputs ===== */
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    background: #fafafa;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #d1d5db;
+    background: #ffffff;
+}
+
+/* ===== Buttons ===== */
+button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    background: #111827;
     color: white;
-    float: left;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
 }
 
-#place-order-section {
-    border: 5px solid black;
-    background-color: lightblue;
-    border-radius: 20px;
-    padding: 0 20px 20px 20px;
-    width: 250px;
-    margin: 15px auto auto auto;
+button:hover {
+    opacity: 0.85;
 }
 
-#current-market {
-    background-color: lightblue;
-    border: 5px solid black;
-    border-radius: 20px;
-    width: 700px;
-    padding: 0 10px 10px 10px;
-    margin: 15px auto auto auto;
-}
-
-#account-balance {
-    border-radius: 20px;
-    padding: 0 20px 20px 20px;
-    width: 250px;
-    margin: 15px auto auto auto;
-}
-
-#wallet-buttons{
-    border-top: 5px solid black;
-    border-radius: 0 0 15px 15px;
-    background-color: lightgrey;
-    padding: 10px;
-    color: black;
+/* Optional subtle divider */
+.divider {
+    height: 1px;
+    background: #ececec;
+    margin: 20px 0;
 }
