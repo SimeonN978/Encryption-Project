@@ -1,4 +1,4 @@
-package Java.Model.account;
+package Model.account;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -11,10 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AccountStore {
-    private final Map<String, String> accounts = new ConcurrentHashMap<>();
-
+    private final Map<String, AccountDetails> accounts = new ConcurrentHashMap<>();
     private final String FILENAME = "accounts.json";
-    //private final String filePath;
 
     public AccountStore() {
         load(); // fill accounts map from JSON if it exists
@@ -23,12 +21,14 @@ public class AccountStore {
     // Public methods >>>
     // get the hashed password associated with the given username
     public synchronized String getPasswordHash(String username) {
-        return accounts.get(username);
+        AccountDetails accountDetails = accounts.get(username);
+
+        return accountDetails.getPasswordHash();
     }
 
     // add a new account to the map and json
-    public synchronized void add(String username, String password) {
-        accounts.put(username, password);
+    public synchronized void add(String username, String password, String email) {
+        accounts.put(username, new AccountDetails(password, email));
         save(); // update to map -> update json
     }
 
@@ -40,11 +40,18 @@ public class AccountStore {
     // Private class methods
     // Save all accounts from map to file
     private void save(){
-        JSONObject json = new JSONObject();
-        json.putAll(accounts);
+        JSONObject root = new JSONObject();
+
+        for(Map.Entry<String, AccountDetails> entry: accounts.entrySet()){
+            JSONObject details = new JSONObject();
+            details.put("hash", entry.getValue().getPasswordHash());
+            details.put("email", entry.getValue().getEmail());
+
+            root.put(entry.getKey(), details);
+        }
 
         try(FileWriter writer = new FileWriter(FILENAME)){
-            writer.write(json.toJSONString());
+            writer.write(root.toJSONString());
             writer.flush();
         } catch (IOException e){
             e.printStackTrace();
@@ -59,8 +66,12 @@ public class AccountStore {
 
             for(Object key : json.keySet()){
                 String username = (String) key;
-                String hash = (String) json.get(key);
-                accounts.put(username, hash);
+                JSONObject details = (JSONObject) json.get(username);
+
+                String hash = (String) details.get("hash");
+                String email = (String) details.get("email");
+
+                accounts.put(username, new AccountDetails(hash, email));
             }
         } catch (ParseException e) {
             System.err.println("Failed to parse accounts.json");
