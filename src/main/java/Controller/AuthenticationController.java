@@ -1,10 +1,11 @@
-package Java.Controller;
+package Controller;
 
-import Java.Model.price.InvalidPriceException;
-import Java.Model.user.InvalidUserException;
-import Java.Model.user.UserManager;
-import Java.Service.AuthenticationService;
+import Model.price.InvalidPriceException;
+import Model.user.InvalidUserException;
+import Model.user.UserManager;
+import Service.UserService;
 
+import Service.SignUpValidationService;
 import spark.Request;
 import spark.Response;
 
@@ -13,12 +14,14 @@ import spark.Session;
 import static spark.Spark.*;
 
 public class AuthenticationController {
-    private final AuthenticationService authenticationService;
+    private final UserService authenticationService;
+    private final SignUpValidationService signUpService;
     private final RateLimiter rateLimiter;
 
     //Constructor
-    public AuthenticationController(AuthenticationService authenticationService, RateLimiter rateLimiter) {
+    public AuthenticationController(UserService authenticationService, SignUpValidationService signUpService, RateLimiter rateLimiter) {
         this.authenticationService = authenticationService;
+        this.signUpService = signUpService;
         this.rateLimiter = rateLimiter;
     }
 
@@ -46,8 +49,7 @@ public class AuthenticationController {
 
         //Is the request not allowed via rateLimiter
         if(!rateLimiter.allowRequest(key)){
-            response.redirect("/login?error=throttled");
-            halt(429, "");
+            halt(429, "Slow down! Too many failed logins. Account has been restricted for a set amount of time.");
         }
     }
 
@@ -55,81 +57,57 @@ public class AuthenticationController {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
-        boolean valid = authenticationService.authenticateLogin(username, password);
+        boolean valid = authenticationService.authenticate(username, password);
 
         //Is username and password valid
         if(!valid){
-            response.redirect("/login?error=invalid");
-            halt(401, "");
+            response.status(400);
+            return "Invalid username or password";
         }
 
         // Valid login at this point
         rateLimiter.onSuccessfulLogin(username);
+
         Session session = request.session(true); // Make a new session for the user
         session.attribute("username", username);  // set session attribute
 
-        response.redirect("/dashboard");
-        return null;
+        response.status(200);
+        return "Success";
     }
 
     private Object handleSignUp(Request request, Response response) throws InvalidPriceException, InvalidUserException {
         String username = request.queryParams("username");
         String password = request.queryParams("password");
+        String email = request.queryParams("email");
 
-        String signUpResult = authenticationService.validateSignUp(username, password); // Calls the password checkers.
-        //If signup requirements are not valid, redirect to a signup error page.
-        if(signUpResult.equals("Username and password required")){
-
-            response.redirect("/signup?error=missingInput");
-            response.status(401);
-            return null;
+        String signUpResult = signUpService.validateSignUp(username, password, email); // Calls the password checkers.
+        //If signup requirements are not valid, send sign up error to client
+        if(!signUpResult.equals("Success")){
+            response.status(400);
+            return signUpResult;
         }
-
-        if(signUpResult.equals("Username already exists")){
-            response.redirect("/signup?error=invalidUser");
-            response.status(401);
-            return null;
-        }
-
-
-        if (signUpResult.equals("Password Does not meet requirements")) {
-            response.redirect("/signup?error=invalidRequirements");
-            response.status(401);
-            return null;
-
-        }
-
-        //edge cases that we do not catch.
-//        if(!signUpResult.equals("Success")){
-//            response.status(400);
-//            return signUpResult;
-//        }
 
         // Valid sign up at this point
-        Session session = request.session(true); //Create new session for user
-        session.attribute("username", username);  //Set session username
-
-
         //Add User to the UserManager when there is a successful signup
         UserManager.getInstance().addUser(username);
 
-        response.redirect("/dashboard");
-        return null;
+        response.status(200);
+        return "Success";
     }
 
     //Show page helpers for lambda funcs
     private Object showLoginPage(Request request, Response response) {
-        response.type("text/html");
-        return HTMLRenderer.render("/public/login.html");
+        response.redirect("/login.html");
+        return null;
     }
 
     private Object showSignUpPage(Request request, Response response) {
-        response.type("text/html");
-        return HTMLRenderer.render("/public/sign-up.html");
+        response.redirect("/sign-up.html");
+        return null;
     }
 
     private Object showIndexPage(Request request, Response response) {
-        response.type("text/html");
-        return HTMLRenderer.render("/public/index.html");
+        response.redirect("/index.html");
+        return null;
     }
 }
