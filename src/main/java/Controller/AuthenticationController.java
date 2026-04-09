@@ -3,6 +3,7 @@ package Controller;
 import Model.price.InvalidPriceException;
 import Model.user.InvalidUserException;
 import Model.user.UserManager;
+import Service.RateLimiter;
 import Service.UserService;
 
 import Service.SignUpValidationService;
@@ -11,10 +12,10 @@ import spark.Response;
 
 import spark.Session;
 
-import static Controller.HTMLRenderer.render;
+import static Service.HTMLRenderer.render;
 import static spark.Spark.*;
 
-public class AuthenticationController {
+public class AuthenticationController implements Controller{
     private final UserService authenticationService;
     private final SignUpValidationService signUpService;
     private final RateLimiter rateLimiter;
@@ -27,6 +28,7 @@ public class AuthenticationController {
     }
 
     // Define User Authentication routes
+    @Override
     public void register() {
         //Show pages to user
         get("/", this::showIndexPage);
