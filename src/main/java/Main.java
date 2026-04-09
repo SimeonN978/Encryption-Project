@@ -6,7 +6,6 @@ import Service.AuthorizationService;
 import Service.MFAService;
 import Service.RateLimiter;
 import Model.account.AccountStore;
-import Service.UserService;
 import Service.SignUpValidationService;
 
 import java.time.Duration;

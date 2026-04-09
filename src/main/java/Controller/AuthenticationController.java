@@ -3,8 +3,8 @@ package Controller;
 import Model.price.InvalidPriceException;
 import Model.user.InvalidUserException;
 import Model.user.UserManager;
+import Service.AuthorizationService;
 import Service.RateLimiter;
-import Service.UserService;
 
 import Service.SignUpValidationService;
 import spark.Request;
@@ -16,13 +16,13 @@ import static Service.HTMLRenderer.render;
 import static spark.Spark.*;
 
 public class AuthenticationController implements Controller{
-    private final UserService authenticationService;
+    private final AuthorizationService authorizationService;
     private final SignUpValidationService signUpService;
     private final RateLimiter rateLimiter;
 
     //Constructor
-    public AuthenticationController(UserService authenticationService, SignUpValidationService signUpService, RateLimiter rateLimiter) {
-        this.authenticationService = authenticationService;
+    public AuthenticationController(AuthorizationService authorizationService, SignUpValidationService signUpService, RateLimiter rateLimiter) {
+        this.authorizationService = authorizationService;
         this.signUpService = signUpService;
         this.rateLimiter = rateLimiter;
     }
@@ -70,7 +70,7 @@ public class AuthenticationController implements Controller{
         String username = request.queryParams("username");
         String password = request.queryParams("password");
 
-        boolean valid = authenticationService.authenticate(username, password);
+        boolean valid = authorizationService.authenticate(username, password);
 
         //Is username and password valid
         if(!valid){
@@ -92,7 +92,7 @@ public class AuthenticationController implements Controller{
         Session session = request.session(true); // Make a new session for the user
         session.attribute("username", username);  // set session attribute
 
-        response.redirect("/dashboard");
+        response.redirect("/mfa");
         return null;
     }
 
