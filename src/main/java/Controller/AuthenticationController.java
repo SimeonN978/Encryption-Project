@@ -40,14 +40,23 @@ public class AuthenticationController {
         post("/login", this::handleLogin);
     }
 
+    private String buildLoginKey(Request request){
+        String ip = request.ip();
+        String username = request.queryParams("username");
+
+        if(username == null || username.isBlank()){
+            return ip;
+        }
+
+        return ip + ":" + username.trim().toLowerCase();
+    }
+
     private void beforeLogin(Request request, Response response) {
         if(!"POST".equalsIgnoreCase(request.requestMethod())){
             return; // before() is a post AND get
         }
 
-        String ip = request.ip();
-        String username = request.queryParams("username");
-        String key = (username == null) ? ip : ip + ":" + username;
+        String key = buildLoginKey(request);
 
         //Is the request not allowed via rateLimiter
         if(!rateLimiter.allowRequest(key)){
@@ -68,7 +77,8 @@ public class AuthenticationController {
         }
 
         // Valid login at this point
-        rateLimiter.onSuccessfulLogin(username);
+        String key = buildLoginKey(request);
+        rateLimiter.onSuccessfulLogin(key);
 
         // Ensure the logged-in user exists in UserManager
         try {

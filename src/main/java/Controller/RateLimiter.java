@@ -42,7 +42,7 @@ public class RateLimiter {
         return bucket.tryConsume(1);
     }
 
-    public void onSuccessfulLogin(String username){
-        buckets.remove(username);
+    public void onSuccessfulLogin(String key){
+        buckets.remove(key);
     }
 }
