@@ -18,7 +18,7 @@ public class MFAController implements Controller{
     @Override
     public void register(){
         // Show mfa page to user
-        before();
+        before("/mfa", this::beforeMFA);
         get("/mfa", this::showMFAPage);
 
         // Handle mfa otp Authentication
@@ -26,6 +26,11 @@ public class MFAController implements Controller{
     }
 
     private Object verifyOTP(Request request, Response response) {
+        //TODO
+        return null;
+    }
+
+    private Object beforeMFA(Request request, Response response){
         //TODO
         return null;
     }
