@@ -1,4 +1,4 @@
-package Controller;
+package Service;
 
 
 import io.github.bucket4j.Bucket;
