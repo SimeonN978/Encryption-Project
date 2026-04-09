@@ -12,10 +12,10 @@ import spark.Session;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Controller.HTMLRenderer.render;
+import static Service.HTMLRenderer.render;
 import static spark.Spark.*;
 
-public class DashBoardController {
+public class DashBoardController implements Controller {
     private final UserService authenticationService;
 
     //Constructor
@@ -24,6 +24,7 @@ public class DashBoardController {
     }
 
     //Define User Dashboard routes
+    @Override
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
