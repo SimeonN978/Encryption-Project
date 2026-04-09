@@ -4,7 +4,7 @@ import Model.price.InvalidPriceException;
 import Model.user.InvalidUserException;
 import Model.user.User;
 import Model.user.UserManager;
-import Service.UserService;
+import Service.AuthorizationService;
 import spark.Request;
 import spark.Response;
 import spark.Session;
@@ -16,11 +16,11 @@ import static Service.HTMLRenderer.render;
 import static spark.Spark.*;
 
 public class DashBoardController implements Controller {
-    private final UserService authenticationService;
+    private final AuthorizationService authorizationService;
 
     //Constructor
-    public DashBoardController(UserService authenticationService) {
-        this.authenticationService = authenticationService;
+    public DashBoardController(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
     }
 
     //Define User Dashboard routes
@@ -28,7 +28,7 @@ public class DashBoardController implements Controller {
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
-        before("/dashboard", UserService::authenticateDashboardAccess);
+        before("/dashboard", AuthorizationService::authorizeDashboardAccess);
         get("/dashboard", this::handleDashboard);
 
         post("/logout", this::handleLogout);
@@ -61,7 +61,7 @@ public class DashBoardController implements Controller {
 
 
     private Object handleDashboard(Request request, Response response) throws InvalidUserException, InvalidPriceException {
-        UserService.authenticateDashboardAccess(request, response);
+        AuthorizationService.authorizeDashboardAccess(request, response);
 
         String username = request.session().attribute("username");
         User user;

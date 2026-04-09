@@ -6,10 +6,10 @@ import spark.Response;
 
 import static spark.Spark.halt;
 
-public class UserService {
+public class AuthorizationService {
     private final AccountStore accountStore;
 
-    public UserService(AccountStore accountStore){
+    public AuthorizationService(AccountStore accountStore){
         this.accountStore = accountStore;
     }
 
@@ -23,7 +23,7 @@ public class UserService {
 
 
     // make sure user is logged in before they can access the dashboard
-    public static void authenticateDashboardAccess(Request request, Response response) {
+    public static void authorizeDashboardAccess(Request request, Response response) {
         String username = request.session().attribute("username"); // does the client have an active session with a username
         boolean authenticated = username != null && request.session(false) != null;
 
