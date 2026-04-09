@@ -2,6 +2,7 @@ import Controller.AuthenticationController;
 import Controller.Controller;
 import Controller.DashBoardController;
 import Controller.MFAController;
+import Service.AuthorizationService;
 import Service.MFAService;
 import Service.RateLimiter;
 import Model.account.AccountStore;
@@ -22,7 +23,7 @@ public class Main {
         AccountStore accountStore = new AccountStore();
 
         // Create Services
-        UserService authenticationService = new UserService(accountStore);
+        AuthorizationService authorizationService = new AuthorizationService(accountStore);
         SignUpValidationService signUpValidationService = new SignUpValidationService(accountStore);
         MFAService mfaService = new MFAService();
 
@@ -33,13 +34,13 @@ public class Main {
         staticFiles.location("/public");
 
         // 3. Define routes and start server
-        AuthenticationController authRoutes = new AuthenticationController(authenticationService, signUpValidationService,rateLimiter);
+        AuthenticationController authRoutes = new AuthenticationController(authorizationService, signUpValidationService,rateLimiter);
         authRoutes.register();
 
         MFAController mfaRoutes = new MFAController(mfaService);
         mfaRoutes.register();
 
-        DashBoardController dashRoutes = new DashBoardController(authenticationService);
+        DashBoardController dashRoutes = new DashBoardController(authorizationService);
         dashRoutes.register();
 
         //If there is an error, print the stack trace
