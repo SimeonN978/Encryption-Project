@@ -3,11 +3,12 @@ package Model.account;
 import java.sql.*;
 
 public class AccountStore {
-    private static final String DB_URL = System.getenv("DB_URL");
+    private static final String DB_URL = System.getenv("DB_URL"); //TODO: Issues saying Not Null
     private static final String DB_USER = "root";
     private static final String DB_PWD = System.getenv("DB_PASSWORD");
 
     public AccountStore(){
+        System.out.println("DB_URL = " + DB_URL);
         createTableIfMissing();
     }
 
@@ -42,7 +43,7 @@ public class AccountStore {
             stmt.setString(1, username);
             stmt.setString(2, passwordHash);
             stmt.setString(3, email);
-            stmt.executeQuery();
+            stmt.executeUpdate();
         } catch(SQLException e){
             e.printStackTrace();
         }
