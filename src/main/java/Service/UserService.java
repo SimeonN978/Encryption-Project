@@ -14,10 +14,16 @@ public class UserService {
     }
 
     public boolean authenticate(String username, String password){
+        if(username == null || password == null){
+            return false;
+        }
+        
         if(!this.accountStore.exists(username)){
             return false; // User does not exist
         }
-
+        
+        if(password.isBlank() || password.length() > 72) return false;
+        
         return HashService.verifyPassword(password, accountStore.getPasswordHash(username));
     }
 
