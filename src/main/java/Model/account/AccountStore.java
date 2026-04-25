@@ -1,83 +1,88 @@
 package Model.account;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.sql.*;
 
 public class AccountStore {
-    private final Map<String, AccountDetails> accounts = new ConcurrentHashMap<>();
-    private final String FILENAME = "accounts.json";
+    private static final String DB_URL = System.getenv("DB_URL"); 
+    private static final String DB_USER = "root";
+    private static final String DB_PWD = System.getenv("DB_PASSWORD");
 
-    public AccountStore() {
-        load(); // fill accounts map from JSON if it exists
+    public AccountStore(){
+        System.out.println("DB_URL = " + DB_URL);
+        createTableIfMissing();
     }
 
-    // Public methods >>>
-    // get the hashed password associated with the given username
-    public synchronized String getPasswordHash(String username) {
-        AccountDetails accountDetails = accounts.get(username);
+    public synchronized String getPasswordHash(String username){
+        String sql = "SELECT password_hash FROM ACCOUNTS WHERE username = ?";
 
-        return accountDetails.getPasswordHash();
-    }
+        //try to open connection
+        try(Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
+            PreparedStatement stmt = conn.prepareStatement(sql)){
 
-    // add a new account to the map and json
-    public synchronized void add(String username, String password, String email) {
-        accounts.put(username, new AccountDetails(password, email));
-        save(); // update to map -> update json
-    }
+            stmt.setString(1, username);
 
-    // check if username is in the json of accounts
-    public synchronized boolean exists(String username){
-        return accounts.containsKey(username);
-    }
-
-    // Private class methods
-    // Save all accounts from map to file
-    private void save(){
-        JSONObject root = new JSONObject();
-
-        for(Map.Entry<String, AccountDetails> entry: accounts.entrySet()){
-            JSONObject details = new JSONObject();
-            details.put("hash", entry.getValue().getPasswordHash());
-            details.put("email", entry.getValue().getEmail());
-
-            root.put(entry.getKey(), details);
-        }
-
-        try(FileWriter writer = new FileWriter(FILENAME)){
-            writer.write(root.toJSONString());
-            writer.flush();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    // Load all accounts from file into the map
-    private void load(){
-        try(FileReader reader = new FileReader(FILENAME)){
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(reader);
-
-            for(Object key : json.keySet()){
-                String username = (String) key;
-                JSONObject details = (JSONObject) json.get(username);
-
-                String hash = (String) details.get("hash");
-                String email = (String) details.get("email");
-
-                accounts.put(username, new AccountDetails(hash, email));
+            // try to execute sql query
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()){
+                    return rs.getString("password_hash");
+                }
             }
-        } catch (ParseException e) {
-            System.err.println("Failed to parse accounts.json");
+        } catch(SQLException e){
             e.printStackTrace();
-        } catch (IOException e){
-            System.out.println("accounts.json not found, starting empty");
+        }
+
+        return null;
+    }
+
+    public synchronized void add(String username, String passwordHash, String email){
+        String sql = "INSERT INTO ACCOUNTS (username, password_hash, email) VALUES(?, ?, ?)";
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+                
+            stmt.setString(1, username);
+            stmt.setString(2, passwordHash);
+            stmt.setString(3, email);
+            stmt.executeUpdate();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    // check if account exists
+    public synchronized boolean exists(String username){
+        String sql = "SELECT 1 FROM ACCOUNTS WHERE username = ?";
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+
+            stmt.setString(1, username);
+
+            try(ResultSet rs = stmt.executeQuery()){
+                return rs.next();
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // On initiation create Accounts table if it doesnt exist
+    private void createTableIfMissing(){
+        String sql = """
+                CREATE TABLE IF NOT EXISTS ACCOUNTS(
+                    username VARCHAR(32) PRIMARY KEY,
+                    password_hash VARCHAR(100) NOT NULL,
+                    email VARCHAR(255) NOT NULL UNIQUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """;
+
+        try(Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PWD);
+            Statement stmt = conn.createStatement()){
+                stmt.execute(sql);
+        } catch (SQLException e){
             e.printStackTrace();
         }
     }

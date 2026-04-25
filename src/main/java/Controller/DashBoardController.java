@@ -27,7 +27,7 @@ public class DashBoardController {
     public void register() {
         // before will filter any requests to dashboard (session authentication)
         // protected route
-        before("/dashboard", UserService::authenticateDashboardAccess);
+        before("/dashboard", UserService::authorizeDashboardAccess);
         get("/dashboard", this::handleDashboard);
 
         post("/logout", this::handleLogout);
@@ -60,7 +60,7 @@ public class DashBoardController {
 
 
     private Object handleDashboard(Request request, Response response) throws InvalidUserException, InvalidPriceException {
-        UserService.authenticateDashboardAccess(request, response);
+        UserService.authorizeDashboardAccess(request, response);
 
         String username = request.session().attribute("username");
         User user;

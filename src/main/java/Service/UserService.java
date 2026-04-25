@@ -14,16 +14,22 @@ public class UserService {
     }
 
     public boolean authenticate(String username, String password){
+        if(username == null || password == null){
+            return false;
+        }
+        
         if(!this.accountStore.exists(username)){
             return false; // User does not exist
         }
-
+        
+        if(password.isBlank() || password.length() > 72) return false;
+        
         return HashService.verifyPassword(password, accountStore.getPasswordHash(username));
     }
 
 
     // make sure user is logged in before they can access the dashboard
-    public static void authenticateDashboardAccess(Request request, Response response) {
+    public static void authorizeDashboardAccess(Request request, Response response) {
         String username = request.session().attribute("username"); // does the client have an active session with a username
         boolean authenticated = username != null && request.session(false) != null;
 
