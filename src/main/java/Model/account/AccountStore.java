@@ -3,7 +3,7 @@ package Model.account;
 import java.sql.*;
 
 public class AccountStore {
-    private static final String DB_URL = System.getenv("DB_URL"); //TODO: Issues saying Not Null
+    private static final String DB_URL = System.getenv("DB_URL"); 
     private static final String DB_USER = "root";
     private static final String DB_PWD = System.getenv("DB_PASSWORD");
 
