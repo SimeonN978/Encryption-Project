@@ -15,10 +15,10 @@ public class SignUpValidationService {
         }
 
         if(!isValidUserName(username)){
-            return "Username already exists";
+            return "Username already exists or does not meet requirements (3-32 characters containing letters, numbers, or underscores)";
         }
         if(!isValidPassword(password)){
-            return "Password does not meet requirements";
+            return "Password not strong enough";
         }
         if(!isValidEmail(email)){
             return "Not a valid email";
@@ -33,21 +33,23 @@ public class SignUpValidationService {
     }
 
     private boolean isValidEmail(String email) {
-        //TODO
-        //validate that the user entered a legitimate email
-        return true;
+        //validate that the user entered a legitimate email string
+        return  email != null &&
+                email.length() <= 255 &&
+                email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
 
     //Make Sure users have passwords that fulfill certain strength requirements.
     private static boolean isValidPassword(String password){
-        if (password.length() < 8 || password.length() > 35){
+        if (password.length() < 8 || password.length() > 35){ // BCrypt limit can go up to 72 characters
             return false;
         }
+
         return checkChar(password);
     }
 
     private boolean isValidUserName(String username){
-        return (username.length() <= 32 && !accountStore.exists(username)); // Username is small enough and the username does not already exist
+        return (username != null && !accountStore.exists(username) && username.matches("^[A-Za-z0-9_]{3,32")); // Username is small enough and the username does not already exist and it matches allow list
     }
 
     // Password must have unique characters to be stronger
